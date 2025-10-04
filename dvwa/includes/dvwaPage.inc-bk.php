@@ -385,70 +385,54 @@ function dvwaHtmlEcho( $pPage ) {
 	Header( 'Content-Type: text/html;charset=utf-8' );     // TODO- proper XHTML headers...
 	Header( 'Expires: Tue, 23 Jun 2009 12:00:00 GMT' );    // Date in the past
 
+    // Sanitizar variables antes de usarlas en el HTML dgo
+    $pageTitle = htmlspecialchars($pPage['title'] ?? 'DVWA', ENT_QUOTES, 'UTF-8');
+    $pageBody = $pPage['body'] ?? ''; // Asume que ya viene sanitizado del sistema
+    $menuHtml = $menuHtml ?? '';
+    $messagesHtml = $messagesHtml ?? '';
+    $systemInfoHtml = $systemInfoHtml ?? '';
+    $themeClass = htmlspecialchars(dvwaThemeGet(), ENT_QUOTES, 'UTF-8');
+
+
 	echo "<!DOCTYPE html>
-
 <html lang=\"en-GB\">
-
-	<head>
-		<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />
-
-		<title>{$pPage[ 'title' ]}</title>
-
-		<link rel=\"stylesheet\" type=\"text/css\" href=\"" . DVWA_WEB_PAGE_TO_ROOT . "dvwa/css/main.css\" />
-
-		<link rel=\"icon\" type=\"\image/ico\" href=\"" . DVWA_WEB_PAGE_TO_ROOT . "favicon.ico\" />
-
-		<script type=\"text/javascript\" src=\"" . DVWA_WEB_PAGE_TO_ROOT . "dvwa/js/dvwaPage.js\"></script>
-
-	</head>
-
-	<body class=\"home " . dvwaThemeGet() . "\">
-		<div id=\"container\">
-
-			<div id=\"header\">
-
-				<img src=\"" . DVWA_WEB_PAGE_TO_ROOT . "dvwa/images/logo.png\" alt=\"Damn Vulnerable Web Application\" />
+    <head>
+        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />
+        <title>{$pageTitle}</title>
+        <link rel=\"stylesheet\" type=\"text/css\" href=\"" . DVWA_WEB_PAGE_TO_ROOT . "dvwa/css/main.css\" />
+        <link rel=\"icon\" type=\"image/ico\" href=\"" . DVWA_WEB_PAGE_TO_ROOT . "favicon.ico\" />
+        <script type=\"text/javascript\" src=\"" . DVWA_WEB_PAGE_TO_ROOT . "dvwa/js/dvwaPage.js\"></script>
+    </head>
+    <body class=\"home {$themeClass}\">
+        <div id=\"container\">
+            <div id=\"header\">
+                <img src=\"" . DVWA_WEB_PAGE_TO_ROOT . "dvwa/images/logo.png\" alt=\"Damn Vulnerable Web Application\" />
                 <a href=\"#\" onclick=\"javascript:toggleTheme();\" class=\"theme-icon\" title=\"Toggle theme between light and dark.\">
                     <img src=\"" . DVWA_WEB_PAGE_TO_ROOT . "dvwa/images/theme-light-dark.png\" alt=\"Damn Vulnerable Web Application\" />
                 </a>
-			</div>
-
-			<div id=\"main_menu\">
-
-				<div id=\"main_menu_padded\">
-				{$menuHtml}
-				</div>
-
-			</div>
-
-			<div id=\"main_body\">
-
-				{$pPage[ 'body' ]}
-				<br /><br />
-				{$messagesHtml}
-
-			</div>
-
-			<div class=\"clear\">
-			</div>
-
-			<div id=\"system_info\">
-				{$systemInfoHtml}
-			</div>
-
-			<div id=\"footer\">
-
-				<p>Damn Vulnerable Web Application (DVWA)</p>
-				<script src='" . DVWA_WEB_PAGE_TO_ROOT . "dvwa/js/add_event_listeners.js'></script>
-
-			</div>
-
-		</div>
-
-	</body>
-
+            </div>
+            <div id=\"main_menu\">
+                <div id=\"main_menu_padded\">
+                {$menuHtml}
+                </div>
+            </div>
+            <div id=\"main_body\">
+                {$pageBody}
+                <br /><br />
+                {$messagesHtml}
+            </div>
+            <div class=\"clear\">
+            </div>
+            <div id=\"system_info\">
+                {$systemInfoHtml}
+            </div>
+            <div id=\"footer\">
+                <p>Damn Vulnerable Web Application (DVWA)</p>
+                <script src=\"" . DVWA_WEB_PAGE_TO_ROOT . "dvwa/js/add_event_listeners.js\"></script>
+            </div>
+        </div>
+    </body>
 </html>";
-}
 
 
 function dvwaHelpHtmlEcho( $pPage ) {
