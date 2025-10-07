@@ -85,14 +85,26 @@ class HealthController
 		if (array_key_exists ("target", $input)) {
 			$target = $input['target'];
 
-			exec ("ping -c 4 " . $target, $output, $ret_var);
+			// Validate input: accept only valid hostnames or IP addresses
+			if (filter_var($target, FILTER_VALIDATE_IP) || 
+			    (filter_var($target, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME) && 
+			     preg_match('/^[a-zA-Z0-9.-]+$/', $target))) {
+				
+				// Escape the argument safely for shell execution
+				$target = escapeshellarg($target);
+				
+				exec ("ping -c 4 " . $target, $output, $ret_var);
 
-			if ($ret_var == 0) {
-				$response['status_code_header'] = 'HTTP/1.1 200 OK';
-				$response['body'] = json_encode (array ("status" => "OK"));
+				if ($ret_var == 0) {
+					$response['status_code_header'] = 'HTTP/1.1 200 OK';
+					$response['body'] = json_encode (array ("status" => "OK"));
+				} else {
+					$response['status_code_header'] = 'HTTP/1.1 500 Internal Server Error';
+					$response['body'] = json_encode (array ("status" => "Connection failed"));
+				}
 			} else {
-				$response['status_code_header'] = 'HTTP/1.1 500 Internal Server Error';
-				$response['body'] = json_encode (array ("status" => "Connection failed"));
+				$response['status_code_header'] = 'HTTP/1.1 400 Bad Request';
+				$response['body'] = json_encode (array ("status" => "Invalid target format"));
 			}
 		} else {
 			$response['status_code_header'] = 'HTTP/1.1 500 Internal Server Error';
